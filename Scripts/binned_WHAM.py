@@ -100,9 +100,8 @@ class WHAMAnalysis:
         self,
         distances,
         kappa,
-        reaction,
         r0_range=(1.34, 3.34, 4.44, 1.789),
-        n_windows=10,
+        n_windows=30,
     ):
         """
         Setup umbrella sampling windows.
@@ -112,20 +111,9 @@ class WHAMAnalysis:
         #             r0_values = np.linspace(r0_range[0], r0_range[1], n_windows)
         #             self.r0_values = r0_values  # Store for later use
         # =============================================================================
-        if reaction in ["1B", "2B"]:
-            R1 = np.linspace(r0_range[0], r0_range[1], n_windows)
-            R2 = np.linspace(r0_range[2], r0_range[3], n_windows)
-            R3 = np.linspace(r0_range[4], r0_range[5], n_windows)
-            R4 = np.linspace(r0_range[6], r0_range[7], n_windows)
-            self.r0_values = (R1 + R2) - (R3 - R4)
-        elif reaction in ["1A", "2A"]:
-            R1 = np.linspace(r0_range[0], r0_range[1], n_windows)
-            R2 = np.linspace(r0_range[2], r0_range[3], n_windows)
-            self.r0_values = R1 - R2
-        elif reaction in ["1C", "2C"]:
-            R1 = np.linspace(r0_range[0], r0_range[1], n_windows)
-            R2 = np.linspace(r0_range[2], r0_range[3], n_windows)
-            self.r0_values = R1 + R2
+        R1 = np.linspace(r0_range[0], r0_range[1], n_windows)
+        R2 = np.linspace(r0_range[2], r0_range[3], n_windows)
+        self.r0_values = R1 + R2
 
         bias_energies = []
         for dist in distances:
@@ -150,6 +138,10 @@ class WHAMAnalysis:
         bin_edges = np.linspace(hist_range[0], hist_range[1], n_bins + 1)
         bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
 
+        np.save("R1A_bin_edges.npy", bin_edges)
+        np.save("R1A_bin_centres.npy", bin_centers)
+        # sys.exit()
+
         # Calculate and plot histograms for each window
         N_k = []  # Number of samples in each window
         n_ij = []  # Histogram counts
@@ -169,9 +161,10 @@ class WHAMAnalysis:
 
         plt.xlabel("Reaction Coordinate ($\mathrm{\AA}$)")
         plt.ylabel("Configurations per Window")
-        plt.title("Histogram of Counts for Each Window")
-        plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+        # plt.title('Histogram of Counts for Each Window')
+        # plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.tight_layout()
+        # plt.savefig(savefig)
         plt.gca().invert_xaxis()
         plt.show()
 
@@ -183,11 +176,13 @@ class WHAMAnalysis:
                 f"{i+1:^6d}  {self.r0_values[i]:^9.3f}  {n:^7d}  {np.mean(dist):^8.3f}  {np.std(dist):^7.3f}"
             )
 
+        histogram_counts = n_ij
+
         N_k = np.array(N_k)
         n_ij = np.array(n_ij)  # Shape: (n_windows, n_bins)
 
         # Add small constant to prevent log(0)
-        eps = 1e-6
+        eps = 1e-8
         n_ij = n_ij + eps
 
         # Initialize free energies
@@ -265,7 +260,7 @@ class WHAMAnalysis:
             print("3. Increase sampling in each window")
             print("4. Adjust the temperature or force constant")
 
-        return bin_centers, pmf
+        return bin_centers, pmf, histogram_counts
 
     def plot_pmf(self, distances, pmf, output_file="pmf.png"):
         """
@@ -357,10 +352,9 @@ distances, energies = wham.read_dat_file(
 bias_energies = wham.setup_umbrellas(
     distances,
     kappa=kappa,
-    reaction="1A",
     r0_range=(2.88, 1.34, 4.4448, 1.79),  # Reaction 1A
-    # reaction = '1B', r0_range=(3.54, 1.36, 2.59, 1.34), # Reaction 1B
-    # reaction='2', r0_range=(1.93,0.96,1.60,0.96,3.32,2.05), # Reaction 2
+    # r0_range=(3.54, 1.36, 2.59, 1.34), # Reaction 1B
+    # r0_range=(1.93,0.96,1.60,0.96,3.32,2.05), # Reaction 2
     n_windows=30,
 )
 
