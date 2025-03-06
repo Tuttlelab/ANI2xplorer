@@ -1,0 +1,11 @@
+ase==3.23.0
+aseMolec @ git+https://github.com/imagdau/aseMolec@2633a672eb235c49a5c7d7161f76f52f4e218e99
+matplotlib==3.9.2
+natsort==8.4.0
+numpy==1.26.4
+pandas==2.2.2
+plumed==2.9.0
+scipy==1.14.1
+torch==2.2.2+cu118
+torchani==2.2.4
+tqdm==4.66.5
