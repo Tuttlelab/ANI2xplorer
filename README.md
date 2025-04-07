@@ -20,3 +20,22 @@ Clone this repository:
 ```bash
 git clone https://github.com/your-username/ANI2xplorer.git
 cd ANI2xplorer
+
+```
+## :file_folder: Repository Structure
+```
+|-- Data/   
+|   |-- Reaction_X/              # Directory for each reaction studied   
+|   |   |-- trajectories/        # Stores full trajectory XYZ files from simulations   
+|   |   |-- full_sim_windows/    # Contains full simulation windows at different sampling resolutions   
+|   |   |   |-- 1k/              # 1000 steps per window   
+|   |   |   |   |-- window_X     # one directory for each window in the simulation   
+|   |   |   |   |   |-- plumed.dat          # File containing inputs for bias potential, reaction coordinate, etc.   
+|   |   |   |   |   |-- *COLVAR*.dat        # Output file from simulation, contains reaction coordinate vlaue, bias potential, etc.   
+|   |   |   |   |   |-- molecule.xyz        # XYZ file containing starting structure of specific window   
+|   |   |   |   |   |-- trajectory.traj     # ASE trajectory file written from simulation - from ase.io import read, read("trajectory.traj", index=":")   
+|   |   |   |-- 10k/             # 10000 steps per window   
+|   |   |-- energies/            # numpy files (.npy) contianing ANI2x single point energies of each frame in each trajectory   
+|   
+|-- Scripts/                     # Contains scripts for running simulations and analysis   
+```
