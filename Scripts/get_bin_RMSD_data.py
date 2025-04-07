@@ -6,14 +6,12 @@ Created on Fri Feb 21 14:48:54 2025
 @author: bwb16179
 """
 
-import tqdm
 import numpy as np
+from ase import Atoms
 from ase.io import read
 from ase.build import minimize_rotation_and_translation as mrat
 import matplotlib.pyplot as plt
-import glob
 import plumed
-from ase import Atoms
 from natsort import natsorted
 
 

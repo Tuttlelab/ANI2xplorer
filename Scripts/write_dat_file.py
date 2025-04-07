@@ -7,8 +7,12 @@ Created on Mon Jan  6 15:08:43 2025
 
 import numpy as np
 import os
+from ase import units
 
-dat_file_rc_R1A_B = """UNITS LENGTH=A TIME=ns ENERGY=kcal/mol
+time = 0.5 * units.fs
+energy = units.mol / units.kJ
+
+dat_file_rc = """UNITS LENGTH=A TIME=fs ENERGY=kcal/mol
 dAB: DISTANCE ATOMS={},{}
 dAC: DISTANCE ATOMS={},{}
 rc: CUSTOM ARG=dAB,dAC FUNC=x+y PERIODIC=NO
@@ -23,132 +27,173 @@ rc: CUSTOM ARG=dAB,dAC,dAD VAR=x,y,z FUNC=x+y+z PERIODIC=NO
 bb: RESTRAINT ARG=rc AT={} KAPPA={}
 PRINT ARG=dAB,dAC,dAD,rc,bb.bias FILE=COLVAR_d_{}.dat STRIDE={}"""
 
+
 # =============================================================================
 # =============================================================================
-# # REMINDER - PLUMED INDEXING STARTS AT 1
+# # PLUMED INDEXING STARTS AT 1
 # =============================================================================
 # =============================================================================
 
-# =============================================================================
-# #Reaction 1A
-# atom_A = 9
-# atom_B = 17
-# atom_C = 6
-# atom_D = 15
-#
-# =============================================================================
+# Reaction 1A
+Reaction_1A_atoms = {
+    "atom_A": 9,
+    "atom_B": 17,
+    "atom_C": 6,
+    "atom_D": 15,
+}
 
 
 # Reaction 1B
-atom_A = 1
-atom_B = 14
-atom_C = 4
-atom_D = 6
+Reaction_1B_atoms = {
+    "atom_A": 1,
+    "atom_B": 14,
+    "atom_C": 4,
+    "atom_D": 6,
+}
+
+# Reaction 1E
+Reaction_2_atoms = {
+    "atom_A": 1,
+    "atom_B": 2,
+    "atom_C": 3,
+    "atom_D": 6,
+    "atom_E": 7,
+    "atom_F": 8,
+}
+
+# Reaction 1A
+
+Reaction_1A = {
+    "stride": 1,
+    "R1_start": 2.88,
+    "R1_end": 1.00,  # 0.96
+    "R2_start": 4.45,
+    "R2_end": 1.00,  # 0.96
+    "windows": 50,
+    "destination_folder": "../Working_Folder/Reaction_1A",
+}
+Reaction_1A_rc = np.linspace(
+    Reaction_1A["R1_start"], Reaction_1A["R1_end"], num=Reaction_1A["windows"]
+) + np.linspace(
+    Reaction_1A["R2_start"], Reaction_1A["R2_end"], num=Reaction_1A["windows"]
+)
 
 
-# =============================================================================
-# #Reaction 2
-# atom_A = 1
-# atom_B = 2
-# atom_C = 3
-# atom_D = 6
-# atom_E = 7
-# atom_F = 8
-# =============================================================================
+# Reaction 1B
 
-
-# =============================================================================
-#
-# # Reaction 1A
-#
-# stride = 1
-# kappa = 25 # kcal/mol/A^2
-#
-# R1_start = 2.88
-# R1_end = 1.34
-#
-# R2_start = 4.4448
-# R2_end = 1.79
-#
-# windows = 30
-#
-# destination_folder = "Working_Folder/ANI/Reaction_1C/"
-# Run = "17"
-#
-# R1_dists = np.linspace(R1_start,R1_end,num=windows)
-# R2_dists = np.linspace(R2_start,R2_end,num=windows)
-# =============================================================================
-
-# =============================================================================
-# # Reaction 2A
-#
-# stride = 1
-# kappa = 25 # kcal/mol/A^2
-#
-# R1_start = 3.54
-# R1_end = 1.36
-#
-# R2_start = 2.59
-# R2_end = 1.34
-#
-# windows = 30
-#
-# destination_folder = "" # set destination folder
-# Run = "" # set which simulation run this is
-#
-# R1_dists = np.linspace(R1_start,R1_end,num=windows)
-# R2_dists = np.linspace(R2_start,R2_end,num=windows)
-# =============================================================================
+Reaction_1B = {
+    "stride": 1,
+    "R1_start": 3.54,
+    "R1_end": 1.00,  # 0.96
+    "R2_start": 2.59,
+    "R2_end": 1.00,  # 0.96
+    "windows": 50,
+    "destination_folder": "../Working_Folder/Reaction_1B",
+}
+Reaction_1B_rc = np.linspace(
+    Reaction_1B["R1_start"], Reaction_1B["R1_end"], num=Reaction_1B["windows"]
+) + np.linspace(
+    Reaction_1B["R2_start"], Reaction_1B["R2_end"], num=Reaction_1B["windows"]
+)
 
 # Reaction 2
 
-stride = 1
-kappa = 50  # kcal/mol/A^2
+Reaction_2 = {
+    "stride": 1,
+    "R1_start": 1.93,
+    "R1_end": 0.90,  # 0.96
+    "R2_start": 1.60,
+    "R2_end": 0.90,  # 0.96
+    "R3_start": 3.32,
+    "R3_end": 1.80,  # 2.05
+    "windows": 50,
+    "destination_folder": "../Working_Folder/Reaction_2",
+}
+Reaction_2_rc = (
+    np.linspace(
+        Reaction_2["R1_start"], Reaction_2["R1_end"], num=Reaction_2["windows"]
+    )
+    + np.linspace(
+        Reaction_2["R2_start"], Reaction_2["R2_end"], num=Reaction_2["windows"]
+    )
+    + np.linspace(
+        Reaction_2["R3_start"], Reaction_2["R3_end"], num=Reaction_2["windows"]
+    )
+)
 
-R1_start = 1.93
-R1_end = 0.96
 
-R2_start = 1.60
-R2_end = 0.96
+if "__main__" == __name__:
 
-R3_start = 3.32
-R3_end = 2.05
+    selected_reaction = "1B"
+    kappa = 250  # kcal/mol/A2
+    Run = ""
 
-windows = 30
+    reactions = {
+        "1A": (Reaction_1A, Reaction_1A_atoms, Reaction_1A_rc, dat_file_rc),
+        "1B": (Reaction_1B, Reaction_1B_atoms, Reaction_1B_rc, dat_file_rc),
+        "2": (Reaction_2, Reaction_2_atoms, Reaction_2_rc, dat_file_rc_R2),
+    }
 
-destination_folder = ""  # set destination folder
-Run = ""  # set which simulation run this is
+    if selected_reaction not in reactions:
+        raise ValueError(f"Invalid reaction name: {selected_reaction}")
 
-R1_dists = np.linspace(R1_start, R1_end, num=windows)
-R2_dists = np.linspace(R2_start, R2_end, num=windows)
-R3_dists = np.linspace(R3_start, R3_end, num=windows)
+    reaction, reaction_atoms, rc_values, dat_file = reactions[
+        selected_reaction
+    ]
+    import sys
 
-for i in range(windows):
-    window = i + 1
-    rc = R1_dists[i] + R2_dists[i]  # Reaction 1A + 1B
-    rc = R1_dists[i] + R2_dists[i] + R3_dists[i]  # Reaction 2
+    # sys.exit()
 
-    kappa = 50
+    stride = reaction["stride"]
+    windows = reaction["windows"]
+    destination_folder = reaction["destination_folder"]
 
-    print(rc)
-    folder = destination_folder + Run
-    if not os.path.exists(folder):
-        os.mkdir(folder)
-    if not os.path.exists(folder + f"/window_{window}"):
-        os.mkdir(folder + f"/window_{window}")
-    with open(f"{folder}/window_{window}/plumed_{window}.dat", "w") as f:
+    for i in range(windows):
+        window = i + 1
+        rc = rc_values[i]
 
-        # Reactions 1A + 1B
-        f.write(
-            dat_file_rc_R1A_B.format(
-                atom_A, atom_B, atom_C, atom_D, rc, kappa, window, stride
-            )
-        )
+        print(f"Window {window}: RC = {rc}")
 
-    # =============================================================================
-    #         # Reaction 2
-    #         f.write(dat_file_rc_R2.format(atom_A, atom_B, atom_C, atom_D, atom_E, atom_F,
-    #                                    rc, kappa, window, stride))
-    # =============================================================================
+        folder = os.path.join(destination_folder, Run)
+        os.makedirs(folder, exist_ok=True)
+        window_folder = os.path.join(folder, f"window_{window}")
+        os.makedirs(window_folder, exist_ok=True)
 
-    f.close()
+        plumed_file = os.path.join(window_folder, f"plumed_{window}.dat")
+
+        with open(plumed_file, "w") as f:
+            if "2" in selected_reaction:
+                f.write(
+                    dat_file_rc_R2.format(
+                        Reaction_2_atoms["atom_A"],
+                        Reaction_2_atoms["atom_B"],
+                        Reaction_2_atoms["atom_C"],
+                        Reaction_2_atoms["atom_D"],
+                        Reaction_2_atoms["atom_E"],
+                        Reaction_2_atoms["atom_F"],
+                        rc,
+                        kappa,
+                        window,
+                        stride,
+                    )
+                )
+            else:
+
+                atoms = (
+                    Reaction_1A_atoms
+                    if "1A" in selected_reaction
+                    else Reaction_1B_atoms
+                )
+
+                f.write(
+                    dat_file_rc.format(
+                        atoms["atom_A"],
+                        atoms["atom_B"],
+                        atoms["atom_C"],
+                        atoms["atom_D"],
+                        rc,
+                        kappa,
+                        window,
+                        stride,
+                    )
+                )
