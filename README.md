@@ -24,18 +24,14 @@ cd ANI2xplorer
 ```
 ## :file_folder: Repository Structure
 ```
-|-- Data/   
-|   |-- Reaction_X/              # Directory for each reaction studied   
-|   |   |-- trajectories/        # Stores full trajectory XYZ files from simulations   
-|   |   |-- full_sim_windows/    # Contains full simulation windows at different sampling resolutions   
-|   |   |   |-- 1k/              # 1000 steps per window   
-|   |   |   |   |-- window_X     # one directory for each window in the simulation   
-|   |   |   |   |   |-- plumed.dat          # File containing inputs for bias potential, reaction coordinate, etc.   
-|   |   |   |   |   |-- *COLVAR*.dat        # Output file from simulation, contains reaction coordinate vlaue, bias potential, etc.   
-|   |   |   |   |   |-- molecule.xyz        # XYZ file containing starting structure of specific window   
-|   |   |   |   |   |-- trajectory.traj     # ASE trajectory file written from simulation - from ase.io import read, read("trajectory.traj", index=":")   
-|   |   |   |-- 10k/             # 10000 steps per window   
-|   |   |-- energies/            # numpy files (.npy) contianing ANI2x single point energies of each frame in each trajectory   
 |   
-|-- Scripts/                     # Contains scripts for running simulations and analysis   
+|-- Scripts/                       # Contains scripts for running simulations and analysis
+|   |-- 3D_Energy_Traj_Plots.py    # Plots numpy arrays against reaction coordinates of simualtions
+|   |-- WHAM.py                    # Perform WHAM analysis on the PLUMED umbrella sampling outputs
+|   |-- Get_bin_RMSD_data.py       # Get the Root Mean Squared Deviation (RMSD) for all structure in a single simualtion window compared to the first frame of the window
+|   |-- Get_bin_energy_data.py     # Get the highest energy window and the information regarding energies in each window
+|   |-- Get_traj_ANI_Es.py         # Get the ANI-2x single point energy from a full simulation trajectory
+|   |-- Run_umbrella_sampling.py   # Run the umbrella sampling simualtion for a single reaction
+|   |-- Write_dat_file.py          # Write the PLUMED input files (.data files) for a each window of a simulation
+|
 ```
